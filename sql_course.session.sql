@@ -1,16 +1,18 @@
 SELECT
 	COUNT(*) AS total_jobs,
-	sd.skill_id,
-    sd.skills
+	skills
 FROM
-	job_postings_fact AS jpf
-INNER JOIN skills_job_dim AS sjd ON jpf.job_id = sjd.job_id
-INNER JOIN skills_dim AS sd ON sjd.skill_id = sd.skill_id
-INNER JOIN company_dim AS cd ON jpf.company_id = cd.company_id
+	skills_dim
+INNER JOIN skills_job_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE job_id IN (
+SELECT
+	job_id
+FROM
+	job_postings_fact
 WHERE
-	jpf.job_work_from_home = TRUE
+	job_work_from_home = TRUE
+)
 GROUP BY
-	sd.skill_id
+	skills
 ORDER BY
 	total_jobs DESC
-LIMIT 5;
